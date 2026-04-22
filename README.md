@@ -48,6 +48,32 @@ This project automates web application testing by leveraging AI capabilities to:
 
 ---
 
+## 🔄 Lifecycle of Project
+
+```mermaid
+flowchart TD
+    A([Initialize Framework]) --> B[Extract DOM & Screenshot]
+    B --> C{AI Analyzes UI}
+    C --> D[Identify Missing Scenarios]
+    D --> E[(Save to JSON Memory)]
+    E --> F{AI Analyzes Scenarios & DOM}
+    F --> G[Generate Automation Script]
+    G --> H[Execute Selenium Script]
+    H --> I([Generate Excel Report])
+    
+    style A fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#fff
+    style B fill:#2196F3,stroke:#1976D2,stroke-width:2px,color:#fff
+    style C fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#fff
+    style D fill:#FF9800,stroke:#F57C00,stroke-width:2px,color:#fff
+    style E fill:#607D8B,stroke:#455A64,stroke-width:2px,color:#fff
+    style F fill:#9C27B0,stroke:#7B1FA2,stroke-width:2px,color:#fff
+    style G fill:#00BCD4,stroke:#0097A7,stroke-width:2px,color:#fff
+    style H fill:#F44336,stroke:#D32F2F,stroke-width:2px,color:#fff
+    style I fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#fff
+```
+
+---
+
 ## 📁 Project Structure (MVC)
 
 The application has been refactored into a highly maintainable Model-View-Controller (Service) architecture:
