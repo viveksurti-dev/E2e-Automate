@@ -4,21 +4,6 @@ A powerful AI-driven end-to-end automation testing framework that combines **Sel
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Supported AI Models](#supported-ai-models)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
 ## 🎯 Overview
 
 This project automates web application testing by leveraging AI capabilities to:
@@ -98,8 +83,10 @@ end-to-end-automation/
 │       └── 📄 view.js                   # The interactive CLI menu interface
 │
 ├── 📂 auto_tests/                       # Generated automated test scripts
+├── 📂 data/                             # Environment data (JSON) for Data-Driven testing
 ├── 📂 layouts/                          # Captured HTML DOM & Screenshots
 ├── 📂 memory/                           # Generated JSON test scenarios
+├── 📂 observations/                     # Crash screenshots from failed test executions
 └── 📂 reports/                          # Generated test execution Excel reports
 ```
 
@@ -208,7 +195,13 @@ Contributions are welcome! Please:
 
 ## 📜 Changelog
 
-### v0.2.0 (Current)
+### v0.3.0 (Current)
+- **AI Self-Healing Tests**: The framework now catches execution crashes natively, captures the error stack trace, and sends it to the AI along with the DOM so the AI can automatically rewrite and retry the test script.
+- **Data-Driven Testing**: Replaced AI-hallucinated test data with a real data-driven approach. The framework reads `data/validData.json` and injects exact credentials directly into the AI's prompt for positive scenarios.
+- **Failure Observability**: The `selenium-webdriver` scripts now automatically capture base64 `.png` screenshots upon any crash inside a `catch` block and save them to an `observations/` directory.
+- **Web UI Dashboard Prototype**: Created `dashboard.html`, a stunning glassmorphic web UI prototype featuring a simulated Mac terminal.
+
+### v0.2.0
 - **MVC Architecture Refactor**: Completely modularized the monolithic script into separate Models (Services), Views, and Controllers.
 - **Anthropic & xAI Integration**: Added support for Claude 3.5 Sonnet and Grok 2 Vision models.
 - **Optimized Token Usage**: Re-ordered the model fallback array to prioritize the fastest and cheapest models (e.g., `gpt-4o-mini`, `gemini-2.5-flash`) before falling back to heavier models.

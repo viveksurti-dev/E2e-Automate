@@ -182,7 +182,19 @@ Requirements:
                 }
             } catch (err) {
                 console.error("Test Failed for " + scenario.scenarioId + ":", err.message);
+                
+                try {
+                    const encodedString = await driver.takeScreenshot();
+                    const path = require('path');
+                    const obsPath = path.join(__dirname, '..', 'observations', 'FAIL_' + scenario.scenarioId + '_' + Date.now() + '.png');
+                    fs.writeFileSync(obsPath, encodedString, 'base64');
+                    console.log("-> 📸 Failure Screenshot saved to: observations/" + path.basename(obsPath));
+                } catch (scErr) {
+                    console.error("-> Failed to take failure screenshot:", scErr.message);
+                }
+
                 scenario.Status = 'Fail';
+                scenario.remarks = err.stack;
                 scenario.executedDate = new Date().toISOString();
             }
         }
@@ -208,6 +220,17 @@ runTests();
       console.error(`-> [Execution Error] Batch ${batchNumber} script encountered an execution error.`);
     }
     console.log(`=================================================================\n`);
+    
+    const memoryPath = fileService.getMemoryPath(safeName);
+    const updatedScenarios = fileService.readScenarios(memoryPath);
+    const failedScenarios = updatedScenarios.filter(s => s.Status === 'Fail' && s.remarks && !s.remarks.includes('Automatically repaired'));
+
+    if (failedScenarios.length > 0) {
+      console.log(`\n-> [Self-Healing] Detected ${failedScenarios.length} failed test(s) in this batch. Initiating AI Auto-Repair...`);
+      for (const failedScenario of failedScenarios) {
+        await selfHealScenario(failedScenario, targetUrl, htmlContent, memoryPath);
+      }
+    }
   }
 
   console.log("-> [Test Executor] All batched scenarios have been generated and executed successfully.");
@@ -232,7 +255,8 @@ Requirements:
 6. Use try/catch blocks for EACH scenario independently so that one failing scenario does not crash or stop the script.
 7. Handle exceptions gracefully. Ensure driver.quit() is called in the finally block.
 8. At the very end of the script, generate a test Report array logging the status (Pass/Fail) of each executed scenario and save it into a 'reports' directory as a JSON file! (Create the directory using fs if it does not exist).
-9. Reply ONLY with raw, valid JavaScript code. DO NOT include markdown formatting like \`\`\`javascript or any conversational text.
+9. If a scenario fails in the catch block, you MUST use 'await driver.takeScreenshot()' and save it using fs to an 'observations' directory located in the parent directory ('../observations/FAIL_[scenarioId]_[Date.now()].png').
+10. Reply ONLY with raw, valid JavaScript code. DO NOT include markdown formatting like \`\`\`javascript or any conversational text.
 
 Generate the code now.`;
 
@@ -246,8 +270,55 @@ Generate the code now.`;
   return testFilePath;
 }
 
+async function selfHealScenario(scenario, targetUrl, htmlContent, scenariosFilePath) {
+  console.log(`\n-> [Self-Healing] Analyzing failure for: ${scenario.scenarioId}...`);
+  
+  const domContext = htmlContent ? `\n\nReference HTML DOM:\n${htmlContent.substring(0, 15000)}` : "";
+  const healPrompt = `You are an expert QA Automation Auto-Healer. 
+The following Selenium test scenario failed during execution.
+
+Scenario: ${scenario.scenario}
+Target URL: ${targetUrl}
+
+CRASH ERROR TRACE:
+${scenario.remarks}
+
+Your task is to rewrite the raw JavaScript code for this specific test case to fix the issue. The failure is likely due to a changed CSS selector, incorrect wait condition, or broken logic. Analyze the provided DOM carefully to find the correct elements.
+
+Requirements:
+1. Initialize the Chrome driver properly via 'new Builder().forBrowser("chrome").build();'.
+2. Use 'By' and 'until' from 'selenium-webdriver'.
+3. Navigate to the 'targetUrl'.
+4. Do NOT include markdown wrappers (like \`\`\`javascript) in your response. Just the raw, executable Node.js code.
+5. Make sure the script handles driver.quit() in a finally block.
+${domContext}`;
+
+  try {
+    let healedCode = await aiService.callAIWithFallback(healPrompt);
+    healedCode = healedCode.replace(/```javascript/gi, "").replace(/```js/gi, "").replace(/```/g, "").trim();
+
+    const healFileName = `heal_${scenario.scenarioId}_${Date.now()}.js`;
+    const healFilePath = fileService.saveCustomTest(healFileName, healedCode);
+
+    console.log(`-> [Self-Healing] AI successfully rewrote the script. Re-executing repaired script...`);
+    execSync(`node "${healFilePath}"`, { stdio: "inherit" });
+    
+    console.log(`-> [Self-Healing] SUCCESS! ${scenario.scenarioId} has been healed and passed.`);
+    
+    const scenarios = fileService.readScenarios(scenariosFilePath);
+    const sIndex = scenarios.findIndex(s => s.scenarioId === scenario.scenarioId);
+    if (sIndex !== -1) {
+      scenarios[sIndex].Status = 'Pass (Healed)';
+      scenarios[sIndex].remarks = 'Automatically repaired by AI';
+      fileService.saveScenarios(scenariosFilePath, scenarios);
+    }
+  } catch (err) {
+    console.error(`-> [Self-Healing] FAILED to heal ${scenario.scenarioId}. Error persists:`, err.message);
+  }
+}
+
 module.exports = {
   extractAndGenerateScenarios,
-  executeScenarios,
+  executeTestsNatively,
   generateSingleExecutableScript
 };

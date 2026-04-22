@@ -15,8 +15,9 @@ class FileService {
     this.memoryDir = path.join(this.basePath, "memory");
     this.testsDir = path.join(this.basePath, "auto_tests");
     this.reportsDir = path.join(this.basePath, "reports");
+    this.obsDir = path.join(this.basePath, "observations");
 
-    [this.dataDir, this.layoutsDir, this.memoryDir, this.testsDir, this.reportsDir].forEach((dir) => {
+    [this.dataDir, this.layoutsDir, this.memoryDir, this.testsDir, this.reportsDir, this.obsDir].forEach((dir) => {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     });
   }
