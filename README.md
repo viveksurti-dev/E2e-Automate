@@ -1,6 +1,6 @@
-﻿# 🤖 End-to-End Automation Testing Framework
+# 🤖 End-to-End Automation Testing Framework (MVC Architecture)
 
-A powerful AI-driven end-to-end automation testing framework that combines **Selenium WebDriver** with cutting-edge AI models (Google Gemini & OpenAI) to intelligently generate, execute, and analyze automated tests.
+A powerful AI-driven end-to-end automation testing framework that combines **Selenium WebDriver** with cutting-edge AI models (Google Gemini, OpenAI, Anthropic Claude, and xAI Grok) to intelligently generate, execute, and analyze automated tests.
 
 ---
 
@@ -14,7 +14,6 @@ A powerful AI-driven end-to-end automation testing framework that combines **Sel
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Supported AI Models](#supported-ai-models)
-- [Project Structure Details](#project-structure-details)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -37,39 +36,45 @@ This project automates web application testing by leveraging AI capabilities to:
 
 | Feature | Description |
 |---------|-------------|
-| 🤖 **AI-Powered Test Generation** | Automatically generates test cases using Gemini & OpenAI |
+| 🤖 **AI-Powered Test Generation** | Automatically generates test cases using Gemini, OpenAI, Claude, and Grok |
 | 🎬 **Browser Automation** | Selenium WebDriver integration for real browser testing |
 | 🖼️ **Visual Analysis** | Screenshot analysis with AI vision capabilities |
-| 🔄 **Fallback Mechanism** | Automatic fallback between multiple AI providers |
+| 🔄 **Smart Fallback Mechanism** | Optimized to try cheaper/faster models first, falling back to powerful ones |
 | 📝 **Test Scenarios** | JSON-based scenario definitions for flexible test cases |
 | 📊 **Report Generation** | Automated Excel reports with detailed test results |
-| 🔐 **Environment Management** | Secure API key and configuration management via .env |
+| 🔐 **Environment Management** | Secure API key management via `.env` |
 | 🌍 **Multi-Domain Support** | Test multiple applications/domains simultaneously |
+| 🏗️ **MVC Architecture** | Clean, modular code separated into Models, Views, and Controllers |
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (MVC)
+
+The application has been refactored into a highly maintainable Model-View-Controller (Service) architecture:
 
 ```
 end-to-end-automation/
-├── 📄 index.js                          # Main entry point for test execution
-├── 📄 generate_test.js                  # AI-powered test case generator
+├── 📄 index.js                          # Main entry point for the application
 ├── 📄 package.json                      # Project dependencies & metadata
 ├── 📄 README.md                         # This file
-├── 📄 .env                              # Environment variables (API keys) [GITIGNORED]
+├── 📄 .env                              # Environment variables (API keys)
 │
-├── 📂 auto_tests/                       # Generated automated test files
-│   ├── localhost_placementportal_auth_login_php_Batch_1_test_*.js
-│   └── localhost_placementportal_auth_login_php_Batch_2_test_*.js
+├── 📂 src/
+│   ├── 📂 controllers/
+│   │   └── 📄 automation_controller.js  # Orchestrates extraction, AI generation, and execution
+│   │
+│   ├── 📂 services/
+│   │   ├── 📄 ai_service.js             # Handles AI API calls & smart fallback logic
+│   │   ├── 📄 browser_service.js        # Manages Selenium WebDriver & DOM extraction
+│   │   └── 📄 file_service.js           # Handles saving/reading layouts, scenarios, and tests
+│   │
+│   └── 📂 views/
+│       └── 📄 view.js                   # The interactive CLI menu interface
 │
-├── 📂 layouts/                          # HTML layout templates for testing
-│   └── localhost_placementportal_auth_login_php.html
-│
-├── 📂 memory/                           # Test scenario definitions & configurations
-│   └── localhost_placementportal_auth_login_php_scenarios.json
-│
-└── 📂 reports/                          # Generated test reports
-    └── *.xlsx                           # Excel test result reports
+├── 📂 auto_tests/                       # Generated automated test scripts
+├── 📂 layouts/                          # Captured HTML DOM & Screenshots
+├── 📂 memory/                           # Generated JSON test scenarios
+└── 📂 reports/                          # Generated test execution Excel reports
 ```
 
 ---
@@ -81,9 +86,11 @@ Before you begin, ensure you have:
 - **Node.js** (v14 or higher)
 - **npm** (v6 or higher)
 - **Git** (for version control)
-- **API Keys** (at least one of the following):
+- **API Keys** (You only need one, but having multiple enables fallbacks):
   - 🔑 Google Gemini API Key
-  - 🔑 OpenAI API Key (ChatGPT/GPT-4)
+  - 🔑 OpenAI API Key (ChatGPT)
+  - 🔑 Anthropic API Key (Claude)
+  - 🔑 Grok API Key (xAI)
 
 ---
 
@@ -91,25 +98,13 @@ Before you begin, ensure you have:
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone <repository-url>
-cd "End to End automation"
+git clone https://github.com/viveksurti-dev/E2e-Automate.git
+cd E2e-Automate
 ```
 
 ### 2️⃣ Install Dependencies
 ```bash
 npm install
-```
-
-**Dependencies include:**
-- `selenium-webdriver` - Browser automation framework
-- `@google/generative-ai` - Google Gemini API integration
-- `openai` - OpenAI/ChatGPT API integration
-- `dotenv` - Environment variable management
-- `xlsx` - Excel report generation
-
-### 3️⃣ Verify Installation
-```bash
-npm list
 ```
 
 ---
@@ -118,181 +113,58 @@ npm list
 
 ### 1️⃣ Create `.env` File
 
-Create a `.env` file in the project root with your API credentials:
+Create a `.env` file in the project root with your API credentials. You can provide multiple Gemini API keys separated by commas for automatic rate-limit rotation!
 
 ```env
-# Google Gemini API
-GEMINI_API_KEY=your_gemini_api_key_here
+# Google Gemini API (Comma separated for multiple keys)
+GEMINI_API_KEY=key_1,key_2,key_3
 
 # OpenAI API
-CHATGPT_API_KEY=your_openai_api_key_here
-# OR
 OPENAI_API_KEY=your_openai_api_key_here
-```
 
-### 2️⃣ Security Best Practices
+# Anthropic API
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
 
-⚠️ **IMPORTANT:**
-- Never commit `.env` file to version control
-- Use strong, unique API keys
-- Regenerate keys if accidentally exposed
-- Consider using environment variables in CI/CD pipelines
-
-### 3️⃣ Configuration File Structure
-
-Create test scenario files in `memory/` directory:
-
-```json
-{
-  "domain": "localhost:8080",
-  "application": "placementportal",
-  "testScenarios": [
-    {
-      "name": "User Login",
-      "steps": [
-        "Navigate to /auth/login",
-        "Enter valid credentials",
-        "Click login button",
-        "Verify dashboard appears"
-      ]
-    }
-  ]
-}
+# Grok API
+GROK_API_KEY=your_grok_api_key_here
 ```
 
 ---
 
 ## 🚀 Usage
 
-### Run Main Test Suite
+### Start the Interactive Framework
+Simply run the entry point to launch the CLI view:
 ```bash
 node index.js
 ```
 
-### Generate New Tests with AI
-```bash
-node generate_test.js
-```
-
-### Run Specific Test File
-```bash
-node auto_tests/localhost_placementportal_auth_login_php_Batch_1_test_*.js
-```
-
-### View Generated Reports
-Reports are automatically generated in the `reports/` directory in Excel format.
+You will be presented with a menu where you can:
+1. Extract UI & Automate all scenarios natively
+2. Extract UI & Generate JSON scenarios only
+3. Execute specific scenarios
+4. Execute failed scenarios
+5. Execute untested scenarios
+6. Export scenarios to Excel
+7. Generate an executable test script manually
 
 ---
 
-## 🤖 Supported AI Models
+## 🤖 Supported AI Models & Fallback Strategy
 
-The framework uses intelligent fallback mechanism across multiple AI providers:
+To optimize API token costs and speed, the `ai_service.js` automatically tries **cheapest and fastest models first**, only falling back to more expensive "heavyweight" models if the cheap ones fail or hit rate limits.
 
-### Google Gemini Models
-| Model | Speed | Accuracy | Vision |
-|-------|-------|----------|--------|
-| `gemini-2.5-flash` | ⚡⚡⚡ | ✅✅✅ | ✅ |
-| `gemini-2.0-flash` | ⚡⚡⚡ | ✅✅✅ | ✅ |
-| `gemini-1.5-flash` | ⚡⚡ | ✅✅ | ✅ |
+### ⚡ FAST & CHEAP (Optimized for Tokens)
+1. `gpt-4o-mini` (OpenAI)
+2. `gemini-2.5-flash` (Google)
+3. `gemini-2.0-flash` (Google)
+4. `gemini-1.5-flash` (Google)
+5. `gpt-3.5-turbo` (OpenAI - Non-vision only)
 
-### OpenAI Models
-| Model | Speed | Accuracy | Vision |
-|-------|-------|----------|--------|
-| `gpt-4o` | ⚡⚡ | ✅✅✅ | ✅ |
-| `gpt-4o-mini` | ⚡⚡⚡ | ✅✅ | ✅ |
-| `gpt-3.5-turbo` | ⚡⚡⚡ | ✅ | ❌ |
-
-**Fallback Strategy:**
-The framework automatically tries models in priority order and falls back to alternatives if one fails or is unavailable.
-
----
-
-## 📂 Project Structure Details
-
-### `index.js`
-**Main orchestrator** for test execution
-- Initializes Selenium WebDriver
-- Loads test scenarios from JSON files
-- Executes test batches
-- Generates reports
-- Handles error management & logging
-
-### `generate_test.js`
-**AI-powered test generator**
-- Analyzes application layouts
-- Uses AI to generate intelligent test cases
-- Creates executable test scripts
-- Saves generated tests to `auto_tests/`
-
-### `auto_tests/`
-**Generated test files**
-- Batch-based test execution (Batch_1, Batch_2, etc.)
-- Timestamped filenames for version control
-- Selenium WebDriver test implementations
-- Independent and concurrent executable
-
-### `layouts/`
-**HTML layout templates**
-- Application UI definitions
-- Element selectors for Selenium
-- Reference for test generation
-- Can be auto-captured from live applications
-
-### `memory/`
-**Test scenario definitions**
-- JSON configuration files
-- Test case descriptions
-- Expected outcomes
-- Application-specific settings
-
-### `reports/`
-**Generated test reports**
-- Excel (.xlsx) format
-- Test results summary
-- Pass/fail statistics
-- Detailed execution logs
-- Screenshots & error traces
-
----
-
-## 🔧 Common Issues & Troubleshooting
-
-### API Key Not Found
-```
-Error: GEMINI_API_KEY not set
-```
-**Solution:** Ensure `.env` file exists and contains valid API keys.
-
-### Browser Driver Issues
-```
-Error: Cannot find Chrome driver
-```
-**Solution:** Selenium WebDriver auto-downloads drivers. Check Chrome/Firefox installation.
-
-### Test Timeout
-**Solution:** Increase timeout in test configuration or check application responsiveness.
-
-### AI Model Unavailable
-The framework automatically falls back to alternative models. Check API quota and rate limits.
-
----
-
-## 📚 Best Practices
-
-✅ **DO:**
-- Use meaningful test scenario names
-- Keep scenario files organized by application
-- Store API keys in environment variables
-- Run tests in isolated browser sessions
-- Review generated tests before execution
-- Generate reports after each test run
-
-❌ **DON'T:**
-- Commit `.env` files to version control
-- Share API keys in repositories
-- Run multiple concurrent tests on same application
-- Modify generated test files (regenerate instead)
-- Rely on single AI model (use fallback feature)
+### 🏋️ POWERFUL (Fallback Only)
+6. `claude-3-5-sonnet-20241022` (Anthropic)
+7. `gpt-4o` (OpenAI)
+8. `grok-2-vision-1212` (xAI)
 
 ---
 
@@ -308,33 +180,25 @@ Contributions are welcome! Please:
 
 ---
 
+## 📜 Changelog
+
+### v0.2.0 (Current)
+- **MVC Architecture Refactor**: Completely modularized the monolithic script into separate Models (Services), Views, and Controllers.
+- **Anthropic & xAI Integration**: Added support for Claude 3.5 Sonnet and Grok 2 Vision models.
+- **Optimized Token Usage**: Re-ordered the model fallback array to prioritize the fastest and cheapest models (e.g., `gpt-4o-mini`, `gemini-2.5-flash`) before falling back to heavier models.
+- **Multiple API Key Support**: Allowed comma-separated Gemini API keys in `.env` to automatically rotate keys when hitting rate limits or low credit balances.
+- **Auto-Close Browser**: Ensured Selenium automatically closes immediately after DOM/Screenshot extraction, saving memory while the AI generates test cases.
+
+### v0.1.0
+- **Initial Release**: Built the foundational AI-powered end-to-end automation testing script.
+- **Monolithic CLI**: Interactive terminal menu using `readline`.
+- **Gemini & OpenAI Integration**: Support for automatic test generation.
+- **Selenium Extraction**: Visual testing via computer vision and DOM extraction.
+- **JSON Scenario Storage**: Local storage for test cases in `memory/`.
+- **Excel Reporting**: Export functionality using `xlsx`.
+
+---
+
 ## 📄 License
 
-This project is licensed under the **ISC License** - see package.json for details.
-
----
-
-## 📞 Support & Contact
-
-For issues, questions, or suggestions:
-- 📧 Open an issue in the repository
-- 💬 Check existing documentation
-- 🐛 Report bugs with test logs and screenshots
-
----
-
-## 🎉 Quick Start Checklist
-
-- [ ] Clone repository
-- [ ] Run `npm install`
-- [ ] Create `.env` file with API keys
-- [ ] Review test scenarios in `memory/`
-- [ ] Run `node index.js`
-- [ ] Check reports in `reports/` directory
-- [ ] Customize scenarios for your application
-
----
-
-**Last Updated:** April 21, 2026  
-**Version:** 1.0.0  
-**Status:** Active Development
+This project is licensed under the **ISC License**.

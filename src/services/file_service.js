@@ -10,12 +10,13 @@ try {
 class FileService {
   constructor(basePath) {
     this.basePath = basePath;
+    this.dataDir = path.join(this.basePath, "data");
     this.layoutsDir = path.join(this.basePath, "layouts");
     this.memoryDir = path.join(this.basePath, "memory");
     this.testsDir = path.join(this.basePath, "auto_tests");
     this.reportsDir = path.join(this.basePath, "reports");
 
-    [this.layoutsDir, this.memoryDir, this.testsDir, this.reportsDir].forEach((dir) => {
+    [this.dataDir, this.layoutsDir, this.memoryDir, this.testsDir, this.reportsDir].forEach((dir) => {
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     });
   }
@@ -76,6 +77,25 @@ class FileService {
     const excelPath = path.join(this.reportsDir, `${safeExcelName}.xlsx`);
     xlsx.writeFile(wb, excelPath);
     return excelPath;
+  }
+
+  readTestEnvironmentData() {
+    const envData = {};
+    if (fs.existsSync(this.dataDir)) {
+      const files = fs.readdirSync(this.dataDir).filter(file => file.endsWith('.json'));
+      for (const file of files) {
+        try {
+          const filePath = path.join(this.dataDir, file);
+          const fileContent = fs.readFileSync(filePath, "utf8");
+          const parsedData = JSON.parse(fileContent);
+          const keyName = path.basename(file, '.json');
+          envData[keyName] = parsedData;
+        } catch (e) {
+          console.error(`-> [Data Error] Failed to read or parse ${file}: ${e.message}`);
+        }
+      }
+    }
+    return envData;
   }
 }
 

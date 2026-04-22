@@ -26,12 +26,20 @@ ${JSON.stringify(existingTitles, null, 2)}
 
 Please strictly analyze the visible page layout and generate completely new, missing scenarios. If no critical new scenarios exist, reply strictly with an empty array: []`;
     }
+
+    const testEnvData = fileService.readTestEnvironmentData();
+    let dataContext = "";
+    if (Object.keys(testEnvData).length > 0) {
+      console.log(`-> [Data] Injected valid environment test data into prompt.`);
+      dataContext = `\n\nTEST ENVIRONMENT DATA:\nWe have the following valid test data available for you to use:\n${JSON.stringify(testEnvData, null, 2)}\n\nCRITICAL INSTRUCTION FOR DATA-DRIVEN TESTING:\nWhen generating POSITIVE test scenarios (like successful logins, valid form submissions, etc.), you MUST explicitly use the values provided in this test data. Map this exact data directly into the "testData" field of your JSON output!`;
+    }
+
     // find scenarios
     console.log("-> [AI] Finding Missing Scenarios...");
     const safeHtml = typeof cleanHtml === "string" ? cleanHtml.substring(0, 5000) : "No HTML extracted";
 
     const prompt = `You are an expert QA Automation Engineer. Analyze the attached screenshot of the web page and its cleaned HTML structure.
-Generate a comprehensive suite of completely NEW test scenarios for this page covering all types: positive, negative, edge cases, screen layout, security (SQL, XSS attacks), functional, non-functional, empty fields.${existingPromptContext}
+Generate a comprehensive suite of completely NEW test scenarios for this page covering all types: positive, negative, edge cases, screen layout, security (SQL, XSS attacks), functional, non-functional, empty fields.${existingPromptContext}${dataContext}
 
 Cleaned HTML: 
 ${safeHtml}
