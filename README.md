@@ -51,14 +51,14 @@ This project automates web application testing by leveraging AI capabilities to:
 ## 🔄 Lifecycle of Project
 
 ```mermaid
-flowchart TD
-    A([Initialize Framework]) --> B[Extract DOM & Screenshot]
+flowchart LR
+    A([Initialize Framework]) --> B(Extract DOM & Screenshot)
     B --> C{AI Analyzes UI}
-    C --> D[Identify Missing Scenarios]
+    C --> D(Identify Missing Scenarios)
     D --> E[(Save to JSON Memory)]
-    E --> F{AI Analyzes Scenarios & DOM}
-    F --> G[Generate Automation Script]
-    G --> H[Execute Selenium Script]
+    E -.->|Phase 2| F{AI Analyzes Scenarios & DOM}
+    F --> G(Generate Automation Script)
+    G --> H(Execute Selenium Script)
     H --> I([Generate Excel Report])
     
     style A fill:#4CAF50,stroke:#388E3C,stroke-width:2px,color:#fff
