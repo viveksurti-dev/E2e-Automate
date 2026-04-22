@@ -195,11 +195,15 @@ Contributions are welcome! Please:
 
 ## 📜 Changelog
 
-### v0.3.0 (Current)
+### v0.3.1 (Current)
+- **Full-Page Screenshots**: Upgraded the visual extraction and failure observability engines. The framework now attempts to use Chrome DevTools Protocol (CDP) to capture perfect full-page scrolling screenshots, with robust fallbacks to dynamic window resizing.
+- **Execution Pause**: Added an interactive `[PAUSE]` checkpoint in the main E2E flow, allowing the user to safely abort and review or edit AI-generated scenarios in the `memory/` folder before execution.
+
+
+### v0.3.0
 - **AI Self-Healing Tests**: The framework now catches execution crashes natively, captures the error stack trace, and sends it to the AI along with the DOM so the AI can automatically rewrite and retry the test script.
 - **Data-Driven Testing**: Replaced AI-hallucinated test data with a real data-driven approach. The framework reads `data/validData.json` and injects exact credentials directly into the AI's prompt for positive scenarios.
 - **Failure Observability**: The `selenium-webdriver` scripts now automatically capture base64 `.png` screenshots upon any crash inside a `catch` block and save them to an `observations/` directory.
-- **Web UI Dashboard Prototype**: Created `dashboard.html`, a stunning glassmorphic web UI prototype featuring a simulated Mac terminal.
 
 ### v0.2.0
 - **MVC Architecture Refactor**: Completely modularized the monolithic script into separate Models (Services), Views, and Controllers.

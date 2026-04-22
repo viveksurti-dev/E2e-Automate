@@ -5,5 +5,8 @@ if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "your_api_key_
   console.error("\n ERROR: Please add your GEMINI_API_KEY to the .env file.");
   process.exit(1);
 } else {
+  console.log("\n==============================================");
+  console.log("   ✨ Special Thank You to Vivek Surati! ✨  ");
+  console.log("   (Creator & Architect of this Framework)    ");
   view.runCliMenu();
 }

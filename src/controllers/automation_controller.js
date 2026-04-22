@@ -96,7 +96,7 @@ Write the scenarios in this exact format:
   }
 }
 
-async function executeScenarios(url, safeName, targetScenariosArray) {
+async function executeTestsNatively(url, safeName, targetScenariosArray) {
   const memoryPath = fileService.getMemoryPath(safeName);
   
   targetScenariosArray = targetScenariosArray.filter((s) => String(s.Status).toLowerCase() !== "skip");
@@ -191,7 +191,7 @@ Requirements:
                     const path = require('path');
                     const obsPath = path.join(__dirname, '..', 'observations', 'FAIL_' + scenario.scenarioId + '_' + Date.now() + '.png');
                     fs.writeFileSync(obsPath, encodedString, 'base64');
-                    console.log("-> 📸 Failure Screenshot saved to: observations/" + path.basename(obsPath));
+                    console.log("->  Failure Screenshot saved to: observations/" + path.basename(obsPath));
                 } catch (scErr) {
                     console.error("-> Failed to take failure screenshot:", scErr.message);
                 }
