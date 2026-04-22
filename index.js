@@ -1,0 +1,9 @@
+require("dotenv").config();
+const view = require("./src/views/view");
+
+if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "your_api_key_here") {
+  console.error("\n ERROR: Please add your GEMINI_API_KEY to the .env file.");
+  process.exit(1);
+} else {
+  view.runCliMenu();
+}
