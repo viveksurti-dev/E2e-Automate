@@ -195,24 +195,24 @@ Contributions are welcome! Please:
 
 ## 📜 Changelog
 
-### v0.3.1 (Current)
+### v0.3.1 (2026-04-22) - Current
 - **Full-Page Screenshots**: Upgraded the visual extraction and failure observability engines. The framework now attempts to use Chrome DevTools Protocol (CDP) to capture perfect full-page scrolling screenshots, with robust fallbacks to dynamic window resizing.
 - **Execution Pause**: Added an interactive `[PAUSE]` checkpoint in the main E2E flow, allowing the user to safely abort and review or edit AI-generated scenarios in the `memory/` folder before execution.
 
 
-### v0.3.0
+### v0.3.0 (2026-04-22)
 - **AI Self-Healing Tests**: The framework now catches execution crashes natively, captures the error stack trace, and sends it to the AI along with the DOM so the AI can automatically rewrite and retry the test script.
 - **Data-Driven Testing**: Replaced AI-hallucinated test data with a real data-driven approach. The framework reads `data/validData.json` and injects exact credentials directly into the AI's prompt for positive scenarios.
 - **Failure Observability**: The `selenium-webdriver` scripts now automatically capture base64 `.png` screenshots upon any crash inside a `catch` block and save them to an `observations/` directory.
 
-### v0.2.0
+### v0.2.0 (2026-04-20)
 - **MVC Architecture Refactor**: Completely modularized the monolithic script into separate Models (Services), Views, and Controllers.
 - **Anthropic & xAI Integration**: Added support for Claude 3.5 Sonnet and Grok 2 Vision models.
 - **Optimized Token Usage**: Re-ordered the model fallback array to prioritize the fastest and cheapest models (e.g., `gpt-4o-mini`, `gemini-2.5-flash`) before falling back to heavier models.
 - **Multiple API Key Support**: Allowed comma-separated Gemini API keys in `.env` to automatically rotate keys when hitting rate limits or low credit balances.
 - **Auto-Close Browser**: Ensured Selenium automatically closes immediately after DOM/Screenshot extraction, saving memory while the AI generates test cases.
 
-### v0.1.0
+### v0.1.0 (2026-03-30)
 - **Initial Release**: Built the foundational AI-powered end-to-end automation testing script.
 - **Monolithic CLI**: Interactive terminal menu using `readline`.
 - **Gemini & OpenAI Integration**: Support for automatic test generation.
