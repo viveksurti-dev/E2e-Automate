@@ -44,7 +44,29 @@ class BrowserService {
       console.log("Error cleaning DOM:", e.message);
     }
 
-    const encodedString = await this.driver.takeScreenshot();
+    console.log("-> [Extraction] Taking full-page screenshot...");
+    let encodedString = "";
+    try {
+      const metrics = await this.driver.sendAndGetDevToolsCommand('Page.getLayoutMetrics');
+      const width = Math.ceil(metrics.contentSize ? metrics.contentSize.width : metrics.cssContentSize.width);
+      const height = Math.ceil(metrics.contentSize ? metrics.contentSize.height : metrics.cssContentSize.height);
+      
+      const res = await this.driver.sendAndGetDevToolsCommand('Page.captureScreenshot', {
+          clip: { x: 0, y: 0, width, height, scale: 1 },
+          captureBeyondViewport: true
+      });
+      encodedString = res.data;
+    } catch (cdpErr) {
+      try {
+        const width = await this.driver.executeScript("return Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);");
+        const height = await this.driver.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);");
+        await this.driver.manage().window().setRect({ width: width, height: height });
+        encodedString = await this.driver.takeScreenshot();
+      } catch (resizeErr) {
+        encodedString = await this.driver.takeScreenshot();
+      }
+    }
+
     return { cleanHtml, encodedString };
   }
 

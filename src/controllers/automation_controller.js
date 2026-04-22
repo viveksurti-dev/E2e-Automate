@@ -184,6 +184,9 @@ Requirements:
                 console.error("Test Failed for " + scenario.scenarioId + ":", err.message);
                 
                 try {
+                    const width = await driver.executeScript("return Math.max(document.body.scrollWidth, document.body.offsetWidth, document.documentElement.clientWidth, document.documentElement.scrollWidth, document.documentElement.offsetWidth);");
+                    const height = await driver.executeScript("return Math.max(document.body.scrollHeight, document.body.offsetHeight, document.documentElement.clientHeight, document.documentElement.scrollHeight, document.documentElement.offsetHeight);");
+                    await driver.manage().window().setRect({ width: width, height: height });
                     const encodedString = await driver.takeScreenshot();
                     const path = require('path');
                     const obsPath = path.join(__dirname, '..', 'observations', 'FAIL_' + scenario.scenarioId + '_' + Date.now() + '.png');
@@ -255,7 +258,7 @@ Requirements:
 6. Use try/catch blocks for EACH scenario independently so that one failing scenario does not crash or stop the script.
 7. Handle exceptions gracefully. Ensure driver.quit() is called in the finally block.
 8. At the very end of the script, generate a test Report array logging the status (Pass/Fail) of each executed scenario and save it into a 'reports' directory as a JSON file! (Create the directory using fs if it does not exist).
-9. If a scenario fails in the catch block, you MUST use 'await driver.takeScreenshot()' and save it using fs to an 'observations' directory located in the parent directory ('../observations/FAIL_[scenarioId]_[Date.now()].png').
+9. If a scenario fails in the catch block, you MUST resize the window to the full document height using 'setRect' and then use 'await driver.takeScreenshot()' to capture a FULL PAGE screenshot. Save it using fs to an 'observations' directory located in the parent directory ('../observations/FAIL_[scenarioId]_[Date.now()].png').
 10. Reply ONLY with raw, valid JavaScript code. DO NOT include markdown formatting like \`\`\`javascript or any conversational text.
 
 Generate the code now.`;

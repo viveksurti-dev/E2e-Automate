@@ -52,8 +52,13 @@ async function runCliMenu() {
         await automationController.extractAndGenerateScenarios(url, safeName);
         memoryList = fileService.readScenarios(memoryPath);
         if (memoryList.length > 0) {
-          console.log(`\n=== Found ${memoryList.length} scenarios. Generating ONE single Master automation file for EVERYTHING... ===`);
-          await automationController.executeScenarios(url, safeName, memoryList);
+          const proceed = await rl.question(`\n[PAUSE] Found ${memoryList.length} scenarios. Review them in memory/ folder if needed.\ny -> continue for automation and n -> safely abort: `);
+          if (proceed.toLowerCase().trim() !== 'y') {
+            console.log("-> Aborted. You can execute them later using Option 3, 4, or 5.");
+            break;
+          }
+          console.log(`\n=== Generating ONE single Master automation file for EVERYTHING... ===`);
+          await automationController.executeTestsNatively(url, safeName, memoryList);
         } else {
           console.log("\n-> No scenarios found in memory to execute.");
         }
@@ -77,7 +82,7 @@ async function runCliMenu() {
         const pickStr = await rl.question(`\nSelect scenario [1-${memoryList.length}]: `);
         const pick = parseInt(pickStr) - 1;
         if (!isNaN(pick) && memoryList[pick]) {
-          await automationController.executeScenarios(url, safeName, [memoryList[pick]]);
+          await automationController.executeTestsNatively(url, safeName, [memoryList[pick]]);
         } else {
           console.log("Invalid selection.");
         }
@@ -95,7 +100,7 @@ async function runCliMenu() {
           break;
         }
         console.log(`Found ${failList.length} failed scenarios. Generating single execution file...`);
-        await automationController.executeScenarios(url, safeName, failList);
+        await automationController.executeTestsNatively(url, safeName, failList);
         break;
 
       case "5":
@@ -110,7 +115,7 @@ async function runCliMenu() {
           break;
         }
         console.log(`Found ${notTestedList.length} untested scenarios. Generating single execution file...`);
-        await automationController.executeScenarios(url, safeName, notTestedList);
+        await automationController.executeTestsNatively(url, safeName, notTestedList);
         break;
 
       case "6":
